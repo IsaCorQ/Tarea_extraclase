@@ -1,0 +1,41 @@
+package tarea_extraclase_icq;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class server extends Observable implements Runnable {
+    private int puerto;//Función para abrir conección cliente servidor
+    public server(int puerto) {
+        this.puerto = puerto;
+    }
+    @Override
+    public void run() {//Crea el socket del servidor
+        ServerSocket servidor = null;
+        Socket sc = null;
+        DataInputStream in;
+        try {
+            servidor = new ServerSocket(puerto);
+            System.out.println("Servidor iniciado");
+            while (true) {
+                //Espero a que un cliente se conecte
+                sc = servidor.accept();
+                System.out.println("Cliente conectado");
+                in = new DataInputStream(sc.getInputStream());
+                String mensaje = in.readUTF();//Lee el mensaje que manda el cliente
+                System.out.println(mensaje);
+                this.setChanged();
+                this.notifyObservers(mensaje);
+                this.clearChanged();
+                sc.close();//Cierra el socket
+                System.out.println("Cliente desconectado");
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
