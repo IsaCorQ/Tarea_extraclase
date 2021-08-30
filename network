@@ -1,0 +1,30 @@
+package tarea_extraclase_icq;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class network implements Runnable {//Ayuda a correr el server
+    private int puerto;
+    private String mensaje;
+    public network(int puerto, String mensaje) {
+        this.puerto = puerto;
+        this.mensaje = mensaje;
+    }
+
+    @Override
+    public void run() {
+        final String HOST = "127.0.0.1";//Indica quien es host
+        DataOutputStream out;
+        try {
+            Socket sc = new Socket(HOST, puerto);//Socket para client-server
+            out = new DataOutputStream(sc.getOutputStream());
+            out.writeUTF(mensaje);
+            sc.close();
+        } catch (IOException ex) {
+            Logger.getLogger(network.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
